@@ -2,15 +2,23 @@
 
 Steps to get the conversation running.
 
+## Install CLI
+
+Install the Nexmo CLI.
+
 ```bash
 npm install -g nexmo-cli@beta
 ```
 
-Configure the nexmo CLI. Writes a config file to ~/.nexmorc
+## Configure CLI
+
+Configure the CLI. Writes a config file to ~/.nexmorc
 
 ```bash
 nexmo setup api_key api_secret
 ```
+
+## Create Application
 
 Run the app:create CLI command. Returns an application ID.
 
@@ -24,6 +32,8 @@ Add the application ID to your local environment variables.
 APP_ID="application ID from previous command"
 ```
 
+## Create Conversation
+
 Run the conversation:create CLI command. Creates a conversation for users to join.
 
 ```bash
@@ -35,6 +45,8 @@ Add the application ID to your local environment variables.
 ```
 CONVERSATION_ID="conversation ID from previous command"
 ```
+
+## Create first user
 
 Run the user:create CLI command. Creates a user to join the conversation.
 
@@ -48,11 +60,15 @@ Add the returned user ID to your local environment variables.
 FIRST_USER="user ID from previous command"
 ```
 
+## Join conversation 
+
 Add new user to the conversation.
 
 ```bash
 nexmo member:add ${CONVERSATION_ID} action=join channel='{"type":"app"}' user_id=${FIRST_USER}
 ```
+
+## Create second user
 
 Run the user:create CLI command again. Creates another user to join the conversation.
 
@@ -65,6 +81,8 @@ Add the returned user ID to your local environment variables.
 ```bash
 SECOND_USER="user ID from previous command"
 ```
+
+## Invite second user to conversation
 
 Invite the second user to the conversation.
 
