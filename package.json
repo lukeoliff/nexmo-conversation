@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "nexmo-stitch": "^3.0.1"
+  }
+}
