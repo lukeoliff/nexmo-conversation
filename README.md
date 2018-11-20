@@ -53,3 +53,21 @@ Add new user to the conversation.
 ```bash
 nexmo member:add ${CONVERSATION_ID} action=join channel='{"type":"app"}' user_id=${FIRST_USER}
 ```
+
+Run the user:create CLI command again. Creates another user to join the conversation.
+
+```bash
+nexmo user:create name="Luke2"
+```
+
+Add the returned user ID to your local environment variables.
+
+```bash
+SECOND_USER="user ID from previous command"
+```
+
+Invite the second user to the conversation.
+
+```bash
+nexmo member:add ${CONVERSATION_ID} action=invite channel='{"type":"app"}' user_id=${SECOND_USER}
+```
