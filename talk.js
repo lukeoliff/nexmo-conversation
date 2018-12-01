@@ -17,6 +17,12 @@ class ChatApp {
     console.log(error)
   }
 
+  eventLogger(event) {
+    return () => {
+      console.log("'%s' event was sent", event)
+    }
+  }
+
   joinConversation(userToken) {
     new ConversationClient({ debug: false })
       .login(userToken)
@@ -40,6 +46,30 @@ class ChatApp {
         this.loginForm.style.display = 'none'
       } else {
         alert('user not found')
+      }
+    })
+
+    this.audioToggle.addEventListener('click', () => {
+      if (this.audioToggle.checked) {
+        this.audioToggle.parentNode.classList.add('active')
+        this.conversation.media.enable().then(stream => {
+          // Older browsers may not have srcObject
+          if ("srcObject" in this.audio) {
+            this.audio.srcObject = stream
+          } else {
+            // Avoid using this in new browsers, as it is going away.
+            this.audio.src = window.URL.createObjectURL(stream)
+          }
+
+          this.audio.onloadedmetadata = () => {
+            this.audio.play()
+          }
+
+          this.eventLogger('member:media')()
+        }).catch(this.errorLogger)
+      } else {
+        this.audioToggle.parentNode.classList.remove('active')
+        this.conversation.media.disable().then(this.eventLogger('member:media')).catch(this.errorLogger)
       }
     })
   }
