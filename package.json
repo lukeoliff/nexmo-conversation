@@ -1,5 +1,11 @@
 {
-  "dependencies": {
-    "nexmo-stitch": "^3.0.1"
+  "name": "my-nexmo-demo-app",
+  "version": "0.1.0",
+  "private": true,
+  "devDependencies": {
+    "http-server": "^0.11.1"
+  },
+  "scripts": {
+    "start": "http-server"
   }
 }
