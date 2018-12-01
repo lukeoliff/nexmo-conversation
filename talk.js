@@ -6,6 +6,10 @@ const CONVERSATION_ID = ''
 class ChatApp {
   constructor() {
     this.loginForm = document.getElementById('login')
+    this.messages = document.getElementById('messages')
+    this.messageFeed = document.getElementById('messageFeed')
+    this.audio = document.getElementById('audio')
+    this.audioToggle = document.getElementById('audioToggle')
     this.setupUserEvents()
   }
 
