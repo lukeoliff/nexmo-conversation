@@ -13,6 +13,23 @@ class ChatApp {
     this.setupUserEvents()
   }
 
+  errorLogger(error) {
+    console.log(error)
+  }
+
+  joinConversation(userToken) {
+    new ConversationClient({ debug: false })
+      .login(userToken)
+      .then(app => {
+        console.log('*** Logged into app', app)
+        return app.getConversation(CONVERSATION_ID)
+      })
+      .then((conversation) => {
+        console.log('*** Joined conversation', conversation)
+      })
+      .catch(this.errorLogger)
+  }
+
   setupUserEvents() {
     this.loginForm.addEventListener('submit', (event) => {
       event.preventDefault()
