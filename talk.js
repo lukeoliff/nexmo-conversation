@@ -26,6 +26,7 @@ class ChatApp {
       })
       .then((conversation) => {
         console.log('*** Joined conversation', conversation)
+        this.setupConversationEvents(conversation)
       })
       .catch(this.errorLogger)
   }
@@ -40,6 +41,16 @@ class ChatApp {
       } else {
         alert('user not found')
       }
+    })
+  }
+
+  setupConversationEvents(conversation) {
+    this.conversation = conversation
+    this.messages.style.display = "block"
+    conversation.on("member:media", (member, event) => {
+      console.log(`*** Member changed media state`, member, event)
+      const text = `${member.user.name} <b>${event.body.audio ? 'enabled' : 'disabled'} audio in the conversation</b><br>`
+      this.messageFeed.innerHTML = text + this.messageFeed.innerHTML
     })
   }
 
