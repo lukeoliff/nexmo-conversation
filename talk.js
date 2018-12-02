@@ -1,5 +1,5 @@
 const USERS = {
-  exampleUser: ''
+  luke: 'json.webtoken.example'
 }
 const CONVERSATION_ID = ''
 
