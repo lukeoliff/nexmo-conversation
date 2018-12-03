@@ -1,19 +1,20 @@
 #!/usr/bin/env node
 const inquirer = require('inquirer')
 const { spawnSync, spawn } = require( 'child_process' )
+const nexmo = require('nexmo')
 const fs = require('fs')
 
 class SetupScript {
   constructor() {
     this.welcome()
-    this.askQuestions()
+    this.run = this.run.bind(this)
   }
 
   welcome() {
     this.output('Let\'s set up the Nexmo demo app')
   }
 
-  askQuestions() {
+  run() {
     const questions = [
       {
         type: 'input',
@@ -44,17 +45,18 @@ class SetupScript {
     inquirer.prompt(questions).then((answers) => {
       this.output(`Setting up ${answers.applicationName} application...`)
       const applicationId = this.createApplication(answers.applicationName)
-      this.output(`Application ${applicationId} created...`)
-
-      this.output(`Setting up ${answers.conversationName} conversation...`)
       const conversationId = this.createConversation(answers.conversationName)
-      this.output(`Conversation ${conversationId} created...`)
-
-      this.output('Setting up users...')
       const user1 = this.createUserObject(answers.user1, conversationId, applicationId)
       const user2 = this.createUserObject(answers.user2, conversationId, applicationId)
-
       this.createConfig(conversationId, user1, user2)
+
+      console.log('----------------------------------------------------------------------------')
+      console.log('Set up complete.')
+      console.log('Config file: config.js')
+      console.log(`Application: ${applicationId}`)
+      console.log(`Conversation: ${conversationId}`)
+      console.log('User 1:', user1)
+      console.log('User 2:', user2)
     })
   }
 
@@ -120,16 +122,12 @@ class SetupScript {
       }
     }
 
-    const jwtOutput = this.syncProcess('nexmo', [
-      'jwt:generate',
-      './private.key',
-      `sub=${username}`,
-      `exp=${Math.round(((new Date).getTime()/1000))+86400}`,
-      `acp=${JSON.stringify(acl)}`,
-      `application_id=${applicationId}`
-    ])
-
-    const [ jwt ] = jwtOutput.stdout.toString().match(/(.*)/)
+    const jwt = nexmo.generateJwt(fs.readFileSync('./private.key'), {
+      application_id: applicationId,
+      sub: username,
+      exp: Math.round(new Date().getTime()/1000)+86400,
+      acl: acl
+    })
 
     return {
       username: username,
@@ -149,12 +147,17 @@ const CONVERSATION_ID = '${conversationId}'`
 
     fs.writeFile('config.js', data, (err, data) => {
         if (err) console.log(err)
-        console.log("Successfully Written to File.")
     })
   }
 
   syncProcess(process, args) {
-    return spawnSync(process, args)
+    try {
+      const ps = spawnSync(process, args)
+
+      return ps
+    } catch(error) {
+      console.error(error);
+    }
   }
 
   asyncProcess(process, args) {
@@ -166,4 +169,5 @@ const CONVERSATION_ID = '${conversationId}'`
   }
 }
 
-new SetupScript()
+script = new SetupScript()
+script.run()
