@@ -5,6 +5,7 @@ class ChatApp {
     this.messageFeed = document.getElementById('messageFeed')
     this.audio = document.getElementById('audio')
     this.audioToggle = document.getElementById('audioToggle')
+    this.audioToggleText = document.getElementById('audioToggleText')
     this.setupUserEvents()
   }
 
@@ -46,8 +47,12 @@ class ChatApp {
     })
 
     this.audioToggle.addEventListener('click', () => {
+      const buttonContainer = this.audioToggle.parentNode;
       if (this.audioToggle.checked) {
-        this.audioToggle.parentNode.classList.add('active')
+        this.audioToggleText.innerHTML = 'Disable Audio'
+        buttonContainer.classList.add('btn-danger')
+        buttonContainer.classList.add('active')
+        buttonContainer.classList.remove('btn-secondary')
         this.conversation.media.enable().then(stream => {
           // Older browsers may not have srcObject
           if ("srcObject" in this.audio) {
@@ -64,7 +69,10 @@ class ChatApp {
           this.eventLogger('member:media')()
         }).catch(this.errorLogger)
       } else {
-        this.audioToggle.parentNode.classList.remove('active')
+        this.audioToggleText.innerHTML = 'Enable Audio'
+        buttonContainer.classList.remove('btn-danger')
+        buttonContainer.classList.remove('active')
+        buttonContainer.classList.add('btn-secondary')
         this.conversation.media.disable().then(this.eventLogger('member:media')).catch(this.errorLogger)
       }
     })
