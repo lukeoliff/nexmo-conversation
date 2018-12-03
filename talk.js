@@ -47,7 +47,7 @@ class ChatApp {
     })
 
     this.audioToggle.addEventListener('click', () => {
-      const buttonContainer = this.audioToggle.parentNode;
+      const buttonContainer = this.audioToggle.parentNode
       if (this.audioToggle.checked) {
         this.audioToggleText.innerHTML = 'Disable Audio'
         buttonContainer.classList.add('btn-danger')
