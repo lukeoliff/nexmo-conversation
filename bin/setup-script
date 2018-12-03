@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const inquirer = require('inquirer')
 const { spawnSync, spawn } = require( 'child_process' )
+const fs = require('fs')
 
 class SetupScript {
   constructor() {
@@ -53,8 +54,8 @@ class SetupScript {
       const user1 = this.createUserObject(answers.user1, conversationId, applicationId)
       const user2 = this.createUserObject(answers.user2, conversationId, applicationId)
 
-      console.log(user1, user2);
-    });
+      this.createConfig(conversationId, user1, user2)
+    })
   }
 
   createApplication(applicationName) {
@@ -69,7 +70,7 @@ class SetupScript {
 
     const [, applicationId] = output.stdout.toString().match(/(?:Application created: )(.*)/)
 
-    return applicationId;
+    return applicationId
   }
 
   createConversation(conversationName) {
@@ -80,7 +81,7 @@ class SetupScript {
 
     const [, conversationId] = output.stdout.toString().match(/(?:Conversation created: )(.*)/)
 
-    return conversationId;
+    return conversationId
   }
 
   createUserObject(username, conversationId, applicationId) {
@@ -136,6 +137,20 @@ class SetupScript {
       memId: memId,
       jwt: jwt
     }
+  }
+
+  createConfig(conversationId, user1, user2) {
+    const data = `const USERS = {
+  ${user1.username}: '${user1.jwt}',
+  ${user2.username}: '${user2.jwt}',
+}
+
+const CONVERSATION_ID = '${conversationId}'`
+
+    fs.writeFile('config.js', data, (err, data) => {
+        if (err) console.log(err)
+        console.log("Successfully Written to File.")
+    })
   }
 
   syncProcess(process, args) {
