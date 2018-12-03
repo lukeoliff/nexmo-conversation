@@ -1,0 +1,154 @@
+#!/usr/bin/env node
+const inquirer = require('inquirer')
+const { spawnSync, spawn } = require( 'child_process' )
+
+class SetupScript {
+  constructor() {
+    this.welcome()
+    this.askQuestions()
+  }
+
+  welcome() {
+    this.output('Let\'s set up the Nexmo demo app')
+  }
+
+  askQuestions() {
+    const questions = [
+      {
+        type: 'input',
+        name: 'applicationName',
+        message: 'What will you call the application?',
+        default: 'Nexmo Demo App'
+      },
+      {
+        type: 'input',
+        name: 'conversationName',
+        message: 'What will you call the conversation?',
+        default: 'Demo Conversation'
+      },
+      {
+        type: 'input',
+        name: 'user1',
+        message: 'What will you call the first user?',
+        default: 'luke'
+      },
+      {
+        type: 'input',
+        name: 'user2',
+        message: 'What will you call the second user?',
+        default: 'alex'
+      }
+    ]
+
+    inquirer.prompt(questions).then((answers) => {
+      this.output(`Setting up ${answers.applicationName} application...`)
+      const applicationId = this.createApplication(answers.applicationName)
+      this.output(`Application ${applicationId} created...`)
+
+      this.output(`Setting up ${answers.conversationName} conversation...`)
+      const conversationId = this.createConversation(answers.conversationName)
+      this.output(`Conversation ${conversationId} created...`)
+
+      this.output('Setting up users...')
+      const user1 = this.createUserObject(answers.user1, conversationId, applicationId)
+      const user2 = this.createUserObject(answers.user2, conversationId, applicationId)
+
+      console.log(user1, user2);
+    });
+  }
+
+  createApplication(applicationName) {
+    const output = this.syncProcess('nexmo', [
+      'app:create',
+      applicationName,
+      'https://example.com/answer',
+      'https://example.com/event',
+      '--type=rtc',
+      '--keyfile=private.key'
+    ])
+
+    const [, applicationId] = output.stdout.toString().match(/(?:Application created: )(.*)/)
+
+    return applicationId;
+  }
+
+  createConversation(conversationName) {
+    const output = this.syncProcess('nexmo', [
+      'conversation:create',
+      `display_name="${conversationName}"`
+    ])
+
+    const [, conversationId] = output.stdout.toString().match(/(?:Conversation created: )(.*)/)
+
+    return conversationId;
+  }
+
+  createUserObject(username, conversationId, applicationId) {
+    const userOutput = this.syncProcess('nexmo', [
+      'user:create',
+      `name="${username}"`
+    ])
+
+    const [, userId] = userOutput.stdout.toString().match(/(?:User created: )(.*)/)
+
+    const channel = {
+      type:"app"
+    }
+
+    const joinOutput = this.syncProcess('nexmo', [
+      'member:add',
+      conversationId,
+      'action=join',
+      `channel=${JSON.stringify(channel)}`,
+      `user_id=${userId}`
+    ])
+
+    const [, memId] = joinOutput.stdout.toString().match(/(?:Member added: )(.*)/)
+
+    const acl = {
+      paths: {
+        "/v1/users/**": {},
+        "/v1/conversations/**": {},
+        "/v1/sessions/**":{},
+        "/v1/devices/**":{},
+        "/v1/image/**":{},
+        "/v3/media/**":{},
+        "/v1/applications/**":{},
+        "/v1/push/**":{},
+        "/v1/knocking/**":{}
+      }
+    }
+
+    const jwtOutput = this.syncProcess('nexmo', [
+      'jwt:generate',
+      './private.key',
+      `sub=${username}`,
+      `exp=${Math.round(((new Date).getTime()/1000))+86400}`,
+      `acp=${JSON.stringify(acl)}`,
+      `application_id=${applicationId}`
+    ])
+
+    const [ jwt ] = jwtOutput.stdout.toString().match(/(.*)/)
+
+    return {
+      username: username,
+      userId: userId,
+      memId: memId,
+      jwt: jwt
+    }
+  }
+
+  syncProcess(process, args) {
+    return spawnSync(process, args)
+  }
+
+  asyncProcess(process, args) {
+    return spawn(process, args)
+  }
+
+  output(text) {
+    console.log(text)
+  }
+}
+
+new SetupScript()
