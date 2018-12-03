@@ -1,8 +1,3 @@
-const USERS = {
-  luke: 'json.webtoken.example'
-}
-const CONVERSATION_ID = ''
-
 class ChatApp {
   constructor() {
     this.loginForm = document.getElementById('login')
