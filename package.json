@@ -11,6 +11,7 @@
     "nexmo": "^2.4.0"
   },
   "scripts": {
-    "start": "http-server"
+    "start": "http-server",
+    "setup-script": "./bin/setup-script"
   }
 }
