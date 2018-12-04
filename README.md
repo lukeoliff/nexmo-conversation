@@ -71,7 +71,7 @@ You’ll notice we’re just mocking authentication here.
 
 ## Super Simple Setup
 
-This ships with a config script. Run that now to generate a new [config.js](./config.js) file with your settings. **If you don't want to run my script, [skip ahead to the manual setup section found at the end of the README](#i-dont-want-to-run-your-script-running-the-steps-manually)**.
+This ships with a config script. Run that now to generate a new [config.js](./config.js) file with your settings. **If you don't want to run my script, [skip ahead to the manual setup section found at the end of the README](#i-dont-want-to-run-your-script-running-the-cli-steps-manually)**.
 
 ```bash
 npm run setup-script
