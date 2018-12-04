@@ -2,3 +2,4 @@ private.key
 .nexmo-app
 /node_modules/
 .eslintrc.json
+.vscode/
