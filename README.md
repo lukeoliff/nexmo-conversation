@@ -101,11 +101,11 @@ So, behind the scenes, the script carries out the following steps.
 
 ## Next Steps
 
-Now, you can login as your two created users. But that's as far as it goes.
+Now, you can login as your two created users.
 
 ## Enable Audio
 
-Read my blog post on enabling audio. `// needs link to blog post`
+Read my blog post on enabling audio `// needs link to blog post`, or checkout/download [enable-audio](https://github.com/lukeoliff/nexmo-conversation/tree/enable-audio) branch on this repository.
 
 ## I Don't Want To Run Your Script! (Running The CLI Steps Manually)
 
